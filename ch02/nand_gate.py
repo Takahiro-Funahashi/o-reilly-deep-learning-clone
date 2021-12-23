@@ -12,6 +12,7 @@ def NAND(x1, x2):
     else:
         return 1
 
+
 if __name__ == '__main__':
     for xs in [(0, 0), (1, 0), (0, 1), (1, 1)]:
         y = NAND(xs[0], xs[1])

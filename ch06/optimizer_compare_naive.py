@@ -1,10 +1,10 @@
 # coding: utf-8
-import sys, os
-sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
-import numpy as np
-import matplotlib.pyplot as plt
 from collections import OrderedDict
-from common.optimizer import *
+import matplotlib.pyplot as plt
+import numpy as np
+import sys
+
+sys.path.append('./common/')
 
 
 def f(x, y):
@@ -14,57 +14,59 @@ def f(x, y):
 def df(x, y):
     return x / 10.0, 2.0*y
 
-init_pos = (-7.0, 2.0)
-params = {}
-params['x'], params['y'] = init_pos[0], init_pos[1]
-grads = {}
-grads['x'], grads['y'] = 0, 0
 
+if __name__ == '__main__':
+    from optimizer import SGD, Momentum, AdaGrad, Adam
 
-optimizers = OrderedDict()
-optimizers["SGD"] = SGD(lr=0.95)
-optimizers["Momentum"] = Momentum(lr=0.1)
-optimizers["AdaGrad"] = AdaGrad(lr=1.5)
-optimizers["Adam"] = Adam(lr=0.3)
-
-idx = 1
-
-for key in optimizers:
-    optimizer = optimizers[key]
-    x_history = []
-    y_history = []
+    init_pos = (-7.0, 2.0)
+    params = {}
     params['x'], params['y'] = init_pos[0], init_pos[1]
-    
-    for i in range(30):
-        x_history.append(params['x'])
-        y_history.append(params['y'])
-        
-        grads['x'], grads['y'] = df(params['x'], params['y'])
-        optimizer.update(params, grads)
-    
+    grads = {}
+    grads['x'], grads['y'] = 0, 0
 
-    x = np.arange(-10, 10, 0.01)
-    y = np.arange(-5, 5, 0.01)
-    
-    X, Y = np.meshgrid(x, y) 
-    Z = f(X, Y)
-    
-    # for simple contour line  
-    mask = Z > 7
-    Z[mask] = 0
-    
-    # plot 
-    plt.subplot(2, 2, idx)
-    idx += 1
-    plt.plot(x_history, y_history, 'o-', color="red")
-    plt.contour(X, Y, Z)
-    plt.ylim(-10, 10)
-    plt.xlim(-10, 10)
-    plt.plot(0, 0, '+')
-    #colorbar()
-    #spring()
-    plt.title(key)
-    plt.xlabel("x")
-    plt.ylabel("y")
-    
-plt.show()
+    optimizers = OrderedDict()
+    optimizers["SGD"] = SGD(lr=0.95)
+    optimizers["Momentum"] = Momentum(lr=0.1)
+    optimizers["AdaGrad"] = AdaGrad(lr=1.5)
+    optimizers["Adam"] = Adam(lr=0.3)
+
+    idx = 1
+
+    for key in optimizers:
+        optimizer = optimizers[key]
+        x_history = []
+        y_history = []
+        params['x'], params['y'] = init_pos[0], init_pos[1]
+
+        for i in range(30):
+            x_history.append(params['x'])
+            y_history.append(params['y'])
+
+            grads['x'], grads['y'] = df(params['x'], params['y'])
+            optimizer.update(params, grads)
+
+        x = np.arange(-10, 10, 0.01)
+        y = np.arange(-5, 5, 0.01)
+
+        X, Y = np.meshgrid(x, y)
+        Z = f(X, Y)
+
+        # for simple contour line
+        mask = Z > 7
+        Z[mask] = 0
+
+        # plot
+        plt.subplot(2, 2, idx)
+        idx += 1
+        plt.plot(x_history, y_history, 'o-', color="red")
+        plt.contour(X, Y, Z)
+        plt.ylim(-10, 10)
+        plt.xlim(-10, 10)
+        plt.plot(0, 0, '+')
+        # colorbar()
+        # spring()
+        plt.title(key)
+        plt.xlabel("x")
+        plt.ylabel("y")
+
+    plt.show()

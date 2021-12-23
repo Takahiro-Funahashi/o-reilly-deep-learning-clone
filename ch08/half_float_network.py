@@ -1,28 +1,30 @@
 # coding: utf-8
-import sys, os
-sys.path.append(os.pardir)  # 親ディレクトリのファイルをインポートするための設定
 import numpy as np
-import matplotlib.pyplot as plt
-from deep_convnet import DeepConvNet
-from dataset.mnist import load_mnist
+import sys
 
+sys.path.append('./ch08/')
+sys.path.append('./dataset/')
 
-(x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
+if __name__ == '__main__':
+    from deep_convnet import DeepConvNet
+    from mnist import load_mnist
 
-network = DeepConvNet()
-network.load_params("deep_convnet_params.pkl")
+    (x_train, t_train), (x_test, t_test) = load_mnist(flatten=False)
 
-sampled = 10000 # 高速化のため
-x_test = x_test[:sampled]
-t_test = t_test[:sampled]
+    network = DeepConvNet()
+    network.load_params("deep_convnet_params.pkl")
 
-print("caluculate accuracy (float64) ... ")
-print(network.accuracy(x_test, t_test))
+    sampled = 10000  # 高速化のため
+    x_test = x_test[:sampled]
+    t_test = t_test[:sampled]
 
-# float16に型変換
-x_test = x_test.astype(np.float16)
-for param in network.params.values():
-    param[...] = param.astype(np.float16)
+    print("caluculate accuracy (float64) ... ")
+    print(network.accuracy(x_test, t_test))
 
-print("caluculate accuracy (float16) ... ")
-print(network.accuracy(x_test, t_test))
+    # float16に型変換
+    x_test = x_test.astype(np.float16)
+    for param in network.params.values():
+        param[...] = param.astype(np.float16)
+
+    print("caluculate accuracy (float16) ... ")
+    print(network.accuracy(x_test, t_test))
